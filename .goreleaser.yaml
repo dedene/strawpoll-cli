@@ -36,10 +36,17 @@ brews:
       owner: dedene
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-      directory: Formula
-    homepage: "https://github.com/dedene/strawpoll-cli"
-    description: "StrawPoll CLI - Create and manage polls from the command line"
-    license: "MIT"
+    commit_author:
+      name: Peter Dedene
+      email: peter@dedene.com
+    directory: Formula
+    homepage: https://github.com/dedene/strawpoll-cli
+    description: CLI for StrawPoll - create and manage polls from the command line
+    license: MIT
+    install: |
+      bin.install "strawpoll"
+    test: |
+      system "#{bin}/strawpoll", "--version"
 
 checksum:
   name_template: "checksums.txt"
