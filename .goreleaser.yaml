@@ -36,6 +36,7 @@ brews:
       owner: dedene
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      directory: Formula
     homepage: "https://github.com/dedene/strawpoll-cli"
     description: "StrawPoll CLI - Create and manage polls from the command line"
     license: "MIT"
