@@ -141,6 +141,14 @@ strawpoll completion zsh > "${fpath[1]}/_strawpoll"
 strawpoll completion fish > ~/.config/fish/completions/strawpoll.fish
 ```
 
+## AI Agent Skill
+
+Install the [Agent Skill](https://agentskills.io/) to use strawpoll-cli with Claude Code, Cursor, Windsurf, or other AI coding agents:
+
+```bash
+npx skills add dedene/strawpoll-cli -g
+```
+
 ## Environment variables
 
 | Variable | Description |

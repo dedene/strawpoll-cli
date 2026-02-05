@@ -29,6 +29,9 @@ go.work
 /.tools/
 
 # End of https://www.toptal.com/developers/gitignore/api/go
-.claude
+# Claude Code — ignore all except skills (distributed to users)
+.claude/*
+!.claude/skills/
+!.claude/skills/**
 .planning/
 /tmp
