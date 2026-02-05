@@ -31,7 +31,7 @@ archives:
         formats:
           - zip
 
-homebrew_casks:
+brews:
   - repository:
       owner: dedene
       name: homebrew-tap
