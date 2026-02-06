@@ -31,7 +31,7 @@ const (
 	apiKeyKey          = "api_key"
 	keyringPasswordEnv = "STRAWPOLL_KEYRING_PASSWORD" //nolint:gosec // env var name
 	keyringBackendEnv  = "STRAWPOLL_KEYRING_BACKEND"  //nolint:gosec // env var name
-	apiKeyEnv          = "STRAWPOLL_API_KEY"           //nolint:gosec // env var name
+	apiKeyEnv          = "STRAWPOLL_API_KEY"          //nolint:gosec // env var name
 )
 
 var (

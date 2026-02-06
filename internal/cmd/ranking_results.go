@@ -174,11 +174,11 @@ type rankingJSONResult struct {
 }
 
 type rankingJSONOption struct {
-	ID         string `json:"id"`
-	Value      string `json:"value"`
-	Score      int    `json:"score"`
+	ID         string  `json:"id"`
+	Value      string  `json:"value"`
+	Score      int     `json:"score"`
 	Percentage float64 `json:"percentage"`
-	Positions  []int  `json:"positions"`
+	Positions  []int   `json:"positions"`
 }
 
 func buildRankingJSON(results *api.PollResults) *rankingJSONResult {

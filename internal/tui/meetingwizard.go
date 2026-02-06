@@ -25,10 +25,10 @@ type MeetingWizardResult struct {
 // Renders on stderr; returns collected inputs for the meeting create flow.
 func RunMeetingWizard() (*MeetingWizardResult, error) {
 	var (
-		datesText  string
-		rangesText string
-		timezone   string
-		location   string
+		datesText   string
+		rangesText  string
+		timezone    string
+		location    string
 		description string
 		allowMaybe  = true
 		dupcheck    = "none"

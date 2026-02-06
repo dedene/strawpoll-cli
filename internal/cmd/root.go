@@ -31,7 +31,6 @@ type CLI struct {
 	Completion CompletionCmd    `cmd:"" help:"Generate shell completions"`
 }
 
-
 type exitPanic struct{ code int }
 
 // Execute runs the CLI with the given arguments.

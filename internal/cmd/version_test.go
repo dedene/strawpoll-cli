@@ -4,11 +4,11 @@ import "testing"
 
 func TestVersionString(t *testing.T) {
 	tests := []struct {
-		name    string
-		ver     string
-		com     string
-		dat     string
-		want    string
+		name string
+		ver  string
+		com  string
+		dat  string
+		want string
 	}{
 		{"defaults", "dev", "", "", "dev"},
 		{"version-only", "v1.0.0", "", "", "v1.0.0"},
