@@ -108,19 +108,16 @@ func (c *MeetingUpdateCmd) Run(flags *RootFlags) error {
 	loc := meetingLocation(poll)
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
-	headers := []string{"ID", "Title", "Location", "Timezone", "Options", "Votes"}
-	rows := [][]string{{
-		poll.ID,
-		poll.Title,
-		meetingLocationStr(poll),
-		meetingTimezoneStr(poll),
-		formatMeetingOptions(poll, loc),
-		voteCount(poll),
-	}}
-
 	fmt.Fprintf(os.Stderr, "Meeting poll updated: %s\n", pollURL)
 
-	return f.Output(poll, headers, rows)
+	return f.OutputSingle(poll, [][2]string{
+		{"ID", poll.ID},
+		{"Title", poll.Title},
+		{"Location", meetingLocationStr(poll)},
+		{"Timezone", meetingTimezoneStr(poll)},
+		{"Options", formatMeetingOptions(poll, loc)},
+		{"Votes", voteCount(poll)},
+	})
 }
 
 // resolveUpdateTimezone picks timezone for parsing new time ranges:

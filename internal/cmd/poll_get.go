@@ -35,17 +35,14 @@ func (c *PollGetCmd) Run(flags *RootFlags) error {
 	pollURL := pollBaseURL + poll.ID
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
-	headers := []string{"ID", "Title", "Type", "URL", "Options", "Votes"}
-	rows := [][]string{{
-		poll.ID,
-		poll.Title,
-		poll.Type,
-		pollURL,
-		fmt.Sprintf("%d", len(poll.PollOptions)),
-		voteCount(poll),
-	}}
-
-	return f.Output(poll, headers, rows)
+	return f.OutputSingle(poll, [][2]string{
+		{"ID", poll.ID},
+		{"Title", poll.Title},
+		{"Type", poll.Type},
+		{"URL", pollURL},
+		{"Options", fmt.Sprintf("%d", len(poll.PollOptions))},
+		{"Votes", voteCount(poll)},
+	})
 }
 
 func voteCount(p *api.Poll) string {
