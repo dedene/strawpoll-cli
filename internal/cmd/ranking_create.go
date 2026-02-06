@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/atotto/clipboard"
 	"github.com/pkg/browser"
@@ -57,10 +56,11 @@ func (c *RankingCreateCmd) Run(flags *RootFlags) error {
 	pollURL := pollBaseURL + poll.ID
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
-	headers := []string{"ID", "Title", "URL"}
-	rows := [][]string{{poll.ID, poll.Title, pollURL}}
-
-	if err := f.Output(poll, headers, rows); err != nil {
+	if err := f.OutputSingle(poll, [][2]string{
+		{"ID", poll.ID},
+		{"Title", poll.Title},
+		{"URL", pollURL},
+	}); err != nil {
 		return err
 	}
 
@@ -111,7 +111,7 @@ func (c *RankingCreateCmd) buildRequest() *api.CreatePollRequest {
 	}
 
 	if c.Deadline != "" {
-		pollCfg.Deadline = rankingParseDeadline(c.Deadline)
+		pollCfg.DeadlineAt = parseDeadlineUnix(c.Deadline)
 	}
 
 	req := &api.CreatePollRequest{
@@ -126,16 +126,4 @@ func (c *RankingCreateCmd) buildRequest() *api.CreatePollRequest {
 	}
 
 	return req
-}
-
-func rankingParseDeadline(s string) string {
-	if _, err := time.Parse(time.RFC3339, s); err == nil {
-		return s
-	}
-
-	if d, err := time.ParseDuration(s); err == nil {
-		return time.Now().Add(d).UTC().Format(time.RFC3339)
-	}
-
-	return s
 }

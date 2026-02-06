@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"time"
 
 	"github.com/dedene/strawpoll-cli/internal/output"
 )
@@ -44,7 +45,7 @@ func (c *PollListCmd) Run(flags *RootFlags) error {
 			p.Title,
 			friendlyType(p.Type),
 			votes,
-			p.CreatedAt.Format("2006-01-02"),
+			time.Unix(p.CreatedAt, 0).Format("2006-01-02"),
 		})
 	}
 

@@ -23,7 +23,7 @@ func testServer(t *testing.T, handler http.Handler) *Client {
 }
 
 func TestCreatePoll(t *testing.T) {
-	now := time.Now().Truncate(time.Second)
+	now := time.Now().Unix()
 	var gotBody CreatePollRequest
 	var gotAPIKey string
 
@@ -49,7 +49,7 @@ func TestCreatePoll(t *testing.T) {
 				{ID: "opt2", Value: "Blue"},
 			},
 			CreatedAt: now,
-			UpdatedAt: now,
+			UpdatedAt: &now,
 		}
 
 		w.Header().Set("Content-Type", "application/json")

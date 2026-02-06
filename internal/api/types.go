@@ -1,7 +1,5 @@
 package api
 
-import "time"
-
 // Results visibility constants (actual API values).
 const (
 	ResultsVisibilityAlways        = "always"
@@ -39,16 +37,16 @@ const (
 
 // Poll represents a StrawPoll poll.
 type Poll struct {
-	ID          string       `json:"id"`
-	Title       string       `json:"title"`
-	Type        string       `json:"type"`
+	ID          string        `json:"id"`
+	Title       string        `json:"title"`
+	Type        string        `json:"type"`
 	PollOptions []*PollOption `json:"poll_options"`
-	PollConfig  *PollConfig  `json:"poll_config"`
-	PollMeta    *PollMeta    `json:"poll_meta"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
-	ResetAt     *time.Time   `json:"reset_at"`
-	Version     int          `json:"version"`
+	PollConfig  *PollConfig   `json:"poll_config"`
+	PollMeta    *PollMeta     `json:"poll_meta"`
+	CreatedAt   int64         `json:"created_at"`
+	UpdatedAt   *int64        `json:"updated_at"`
+	ResetAt     *int64        `json:"reset_at"`
+	Version     string        `json:"version"`
 }
 
 // PollOption represents a single option in a poll.
@@ -68,33 +66,33 @@ type PollOption struct {
 
 // PollConfig holds all poll configuration fields.
 type PollConfig struct {
-	IsPrivate            *bool   `json:"is_private,omitempty"`
-	VoteType             string  `json:"vote_type,omitempty"`
-	AllowComments        *bool   `json:"allow_comments,omitempty"`
-	AllowIndecision      *bool   `json:"allow_indecision,omitempty"`
-	AllowOtherOption     *bool   `json:"allow_other_option,omitempty"`
-	AllowVpn             *bool   `json:"allow_vpn,omitempty"`
-	Deadline             string  `json:"deadline,omitempty"`
-	DuplicationChecking  string  `json:"duplication_checking,omitempty"`
-	EditVotePermissions  string  `json:"edit_vote_permissions,omitempty"`
-	ForceAppearance      string  `json:"force_appearance,omitempty"`
-	HideParticipants     *bool   `json:"hide_participants,omitempty"`
-	IsMultipleChoice     *bool   `json:"is_multiple_choice,omitempty"`
-	MaxChoices           *int    `json:"max_choices,omitempty"`
-	MinChoices           *int    `json:"min_choices,omitempty"`
-	MultipleChoicesMax   *int    `json:"multiple_choices_max,omitempty"`
-	MultipleChoicesMin   *int    `json:"multiple_choices_min,omitempty"`
-	NumberOfWinners      *int    `json:"number_of_winners,omitempty"`
-	Randomize            *bool   `json:"randomize,omitempty"`
-	RequireNames         *bool   `json:"require_names,omitempty"`
-	ResultsVisibility    string  `json:"results_visibility,omitempty"`
+	IsPrivate           *bool  `json:"is_private,omitempty"`
+	VoteType            string `json:"vote_type,omitempty"`
+	AllowComments       *bool  `json:"allow_comments,omitempty"`
+	AllowIndeterminate  *bool  `json:"allow_indeterminate,omitempty"`
+	AllowOtherOption    *bool  `json:"allow_other_option,omitempty"`
+	AllowVpnUsers       *bool  `json:"allow_vpn_users,omitempty"`
+	DeadlineAt          *int64 `json:"deadline_at,omitempty"`
+	DuplicationChecking string `json:"duplication_checking,omitempty"`
+	EditVotePermissions string `json:"edit_vote_permissions,omitempty"`
+	ForceAppearance     string `json:"force_appearance,omitempty"`
+	HideParticipants    *bool  `json:"hide_participants,omitempty"`
+	IsMultipleChoice    *bool  `json:"is_multiple_choice,omitempty"`
+	MaxChoices          *int   `json:"max_choices,omitempty"`
+	MinChoices          *int   `json:"min_choices,omitempty"`
+	MultipleChoiceMax   *int   `json:"multiple_choice_max,omitempty"`
+	MultipleChoiceMin   *int   `json:"multiple_choice_min,omitempty"`
+	NumberOfWinners     *int   `json:"number_of_winners,omitempty"`
+	RandomizeOptions    *bool  `json:"randomize_options,omitempty"`
+	RequireVoterNames   *bool  `json:"require_voter_names,omitempty"`
+	ResultsVisibility   string `json:"results_visibility,omitempty"`
 }
 
 // PollMeta holds poll metadata.
 type PollMeta struct {
 	Description      string `json:"description,omitempty"`
 	Location         string `json:"location,omitempty"`
-	Timezone         string `json:"timezone,omitempty"`          // IANA timezone (e.g. "Europe/Berlin")
+	Timezone         string `json:"timezone,omitempty"` // IANA timezone (e.g. "Europe/Berlin")
 	VoteCount        int    `json:"vote_count,omitempty"`
 	ParticipantCount int    `json:"participant_count,omitempty"` // read-only
 	ViewCount        int    `json:"view_count,omitempty"`        // read-only
@@ -117,24 +115,24 @@ type PollParticipant struct {
 	CountryCode   string `json:"country_code"`
 	IsEditAllowed bool   `json:"is_edit_allowed"`
 	PollVotes     []*int `json:"poll_votes"`
-	CreatedAt     string `json:"created_at"`
+	CreatedAt     int64  `json:"created_at"`
 }
 
 // CreatePollRequest is the request body for creating a poll.
 type CreatePollRequest struct {
-	Title       string       `json:"title"`
-	Type        string       `json:"type"`
+	Title       string        `json:"title"`
+	Type        string        `json:"type"`
 	PollOptions []*PollOption `json:"poll_options"`
-	PollConfig  *PollConfig  `json:"poll_config,omitempty"`
-	PollMeta    *PollMeta    `json:"poll_meta,omitempty"`
+	PollConfig  *PollConfig   `json:"poll_config,omitempty"`
+	PollMeta    *PollMeta     `json:"poll_meta,omitempty"`
 }
 
 // UpdatePollRequest is the request body for updating a poll.
 type UpdatePollRequest struct {
-	Title       string       `json:"title,omitempty"`
+	Title       string        `json:"title,omitempty"`
 	PollOptions []*PollOption `json:"poll_options,omitempty"`
-	PollConfig  *PollConfig  `json:"poll_config,omitempty"`
-	PollMeta    *PollMeta    `json:"poll_meta,omitempty"`
+	PollConfig  *PollConfig   `json:"poll_config,omitempty"`
+	PollMeta    *PollMeta     `json:"poll_meta,omitempty"`
 }
 
 // Pagination holds page-based pagination metadata.

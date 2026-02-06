@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/dedene/strawpoll-cli/internal/api"
 	"github.com/dedene/strawpoll-cli/internal/output"
@@ -51,7 +52,7 @@ func (c *RankingListCmd) Run(flags *RootFlags) error {
 			p.Title,
 			fmt.Sprintf("%d", len(p.PollOptions)),
 			votes,
-			p.CreatedAt.Format("2006-01-02"),
+			time.Unix(p.CreatedAt, 0).Format("2006-01-02"),
 		})
 	}
 

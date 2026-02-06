@@ -103,10 +103,11 @@ func (c *PollCreateCmd) createFromFlags(flags *RootFlags) error {
 	pollURL := pollBaseURL + poll.ID
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
-	headers := []string{"ID", "Title", "URL"}
-	rows := [][]string{{poll.ID, poll.Title, pollURL}}
-
-	if err := f.Output(poll, headers, rows); err != nil {
+	if err := f.OutputSingle(poll, [][2]string{
+		{"ID", poll.ID},
+		{"Title", poll.Title},
+		{"URL", pollURL},
+	}); err != nil {
 		return err
 	}
 
@@ -167,27 +168,27 @@ func (c *PollCreateCmd) buildRequest() *api.CreatePollRequest {
 		EditVotePermissions: c.EditVotePerms,
 		IsPrivate:           boolPtr(c.IsPrivate),
 		AllowComments:       boolPtr(c.AllowComments),
-		AllowVpn:            boolPtr(c.AllowVPN),
+		AllowVpnUsers:       boolPtr(c.AllowVPN),
 		HideParticipants:    boolPtr(c.HideParticipants),
 		AllowOtherOption:    boolPtr(c.AllowOther),
-		RequireNames:        boolPtr(c.RequireNames),
-		Randomize:           boolPtr(c.Randomize),
+		RequireVoterNames:   boolPtr(c.RequireNames),
+		RandomizeOptions:    boolPtr(c.Randomize),
 	}
 
 	if c.IsMultipleChoice {
 		pollCfg.IsMultipleChoice = boolPtr(true)
 
 		if c.MultipleChoiceMin > 0 {
-			pollCfg.MultipleChoicesMin = intPtr(c.MultipleChoiceMin)
+			pollCfg.MultipleChoiceMin = intPtr(c.MultipleChoiceMin)
 		}
 
 		if c.MultipleChoiceMax > 0 {
-			pollCfg.MultipleChoicesMax = intPtr(c.MultipleChoiceMax)
+			pollCfg.MultipleChoiceMax = intPtr(c.MultipleChoiceMax)
 		}
 	}
 
 	if c.Deadline != "" {
-		pollCfg.Deadline = parseDeadline(c.Deadline)
+		pollCfg.DeadlineAt = parseDeadlineUnix(c.Deadline)
 	}
 
 	return &api.CreatePollRequest{
@@ -197,18 +198,20 @@ func (c *PollCreateCmd) buildRequest() *api.CreatePollRequest {
 	}
 }
 
-func parseDeadline(s string) string {
+func parseDeadlineUnix(s string) *int64 {
 	// Try RFC3339 first
-	if _, err := time.Parse(time.RFC3339, s); err == nil {
-		return s
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		unix := t.Unix()
+		return &unix
 	}
 
 	// Try as duration from now
 	if d, err := time.ParseDuration(s); err == nil {
-		return time.Now().Add(d).UTC().Format(time.RFC3339)
+		unix := time.Now().Add(d).Unix()
+		return &unix
 	}
 
-	return s
+	return nil
 }
 
 func boolPtr(b bool) *bool { return &b }

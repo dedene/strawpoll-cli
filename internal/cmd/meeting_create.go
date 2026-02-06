@@ -122,10 +122,11 @@ func (c *MeetingCreateCmd) createFromFlags(flags *RootFlags) error {
 	pollURL := pollBaseURL + poll.ID
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
-	headers := []string{"ID", "Title", "URL"}
-	rows := [][]string{{poll.ID, poll.Title, pollURL}}
-
-	if err := f.Output(poll, headers, rows); err != nil {
+	if err := f.OutputSingle(poll, [][2]string{
+		{"ID", poll.ID},
+		{"Title", poll.Title},
+		{"URL", pollURL},
+	}); err != nil {
 		return err
 	}
 
@@ -161,14 +162,14 @@ func (c *MeetingCreateCmd) buildRequest(options []*api.PollOption, loc *time.Loc
 	pollCfg := &api.PollConfig{
 		VoteType:            api.VoteTypeParticipantGrid,
 		IsMultipleChoice:    boolPtr(true),
-		RequireNames:        boolPtr(true),
-		AllowIndecision:     boolPtr(c.AllowMaybe),
+		RequireVoterNames:   boolPtr(true),
+		AllowIndeterminate:  boolPtr(c.AllowMaybe),
 		DuplicationChecking: c.Dupcheck,
 		EditVotePermissions: "admin_voter",
 	}
 
 	if c.Deadline != "" {
-		pollCfg.Deadline = parseDeadline(c.Deadline)
+		pollCfg.DeadlineAt = parseDeadlineUnix(c.Deadline)
 	}
 
 	tzName := ""
