@@ -25,10 +25,11 @@ func RenderTable(w io.Writer, headers []string, rows [][]string, colors *Colors)
 
 	headerStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("#60a5fa"))
+		Foreground(lipgloss.Color("#60a5fa")).
+		PaddingRight(2)
 
-	defaultStyle := lipgloss.NewStyle()
-	faintStyle := lipgloss.NewStyle().Faint(true)
+	defaultStyle := lipgloss.NewStyle().PaddingRight(2)
+	faintStyle := lipgloss.NewStyle().Faint(true).PaddingRight(2)
 
 	t := table.New().
 		Headers(headers...).
