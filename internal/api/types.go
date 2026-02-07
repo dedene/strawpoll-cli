@@ -101,7 +101,7 @@ type PollMeta struct {
 // PollResults represents poll results from the API.
 type PollResults struct {
 	ID               string             `json:"id"`
-	Version          int                `json:"version"`
+	Version          string             `json:"version"`
 	VoteCount        int                `json:"voteCount"`        // camelCase per OpenAPI spec
 	ParticipantCount int                `json:"participantCount"` // camelCase per OpenAPI spec
 	PollOptions      []*PollOption      `json:"poll_options"`
