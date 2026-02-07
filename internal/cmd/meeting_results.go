@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/dedene/strawpoll-cli/internal/api"
 	"github.com/dedene/strawpoll-cli/internal/output"
 )
 
-// MeetingResultsCmd displays meeting poll availability as a participant-by-timeslot grid.
+// MeetingResultsCmd displays meeting poll availability as a timeslot-by-participant grid.
 type MeetingResultsCmd struct {
-	ID string `arg:"" required:"" help:"Poll ID or URL"`
+	ID            string `arg:"" required:"" help:"Poll ID or URL"`
+	OriginalOrder bool   `help:"Show timeslots in original poll order instead of best availability first" name:"original-order"`
 }
 
 // Run fetches meeting poll and results, renders availability grid.
@@ -50,35 +52,40 @@ func (c *MeetingResultsCmd) Run(flags *RootFlags) error {
 
 	f := output.NewFormatter(os.Stdout, flags.JSON, flags.Plain, flags.NoColor)
 
-	headers, rows := availabilityGrid(poll, results, loc)
+	headers, rows, scores := availabilityGrid(poll, results, loc)
+	if !c.OriginalOrder {
+		sortRowsByScore(rows, scores)
+	}
 
 	return f.Output(results, headers, rows)
 }
 
-// availabilityGrid builds the participant-by-timeslot grid table.
-// Returns headers (Name + timeslot labels) and rows (participant votes + summary).
-func availabilityGrid(poll *api.Poll, results *api.PollResults, loc *time.Location) ([]string, [][]string) {
-	// Build headers: "Name" + formatted timeslot for each option.
-	headers := make([]string, 0, 1+len(poll.PollOptions))
-	headers = append(headers, "Name")
-
-	for _, opt := range poll.PollOptions {
-		headers = append(headers, formatTimeslot(opt, loc))
-	}
-
-	// Build participant rows.
-	rows := make([][]string, 0, len(results.PollParticipants)+1)
+// availabilityGrid builds a timeslot-by-participant grid table.
+// Returns headers, rows (one per timeslot), and availability scores for sorting.
+func availabilityGrid(poll *api.Poll, results *api.PollResults, loc *time.Location) ([]string, [][]string, []int) {
+	// Build headers: "Slot" + participant names + "Total".
+	headers := make([]string, 0, 2+len(results.PollParticipants))
+	headers = append(headers, "Slot")
 
 	for _, p := range results.PollParticipants {
-		row := make([]string, 0, 1+len(poll.PollOptions))
-
 		name := p.Name
 		if name == "" {
 			name = "Anonymous"
 		}
-		row = append(row, name)
+		headers = append(headers, name)
+	}
 
-		for i := range poll.PollOptions {
+	headers = append(headers, "Total")
+
+	// Build rows: one per timeslot.
+	rows := make([][]string, 0, len(poll.PollOptions))
+	scores := make([]int, 0, len(poll.PollOptions))
+
+	for i, opt := range poll.PollOptions {
+		row := make([]string, 0, 2+len(results.PollParticipants))
+		row = append(row, formatTimeslot(opt, loc))
+
+		for _, p := range results.PollParticipants {
 			if i < len(p.PollVotes) {
 				row = append(row, voteLabel(p.PollVotes[i]))
 			} else {
@@ -86,20 +93,12 @@ func availabilityGrid(poll *api.Poll, results *api.PollResults, loc *time.Locati
 			}
 		}
 
+		row = append(row, availabilitySummary(results.PollParticipants, i))
 		rows = append(rows, row)
+		scores = append(scores, availabilityScore(results.PollParticipants, i))
 	}
 
-	// Summary row: count yes+maybe per timeslot.
-	summary := make([]string, 0, 1+len(poll.PollOptions))
-	summary = append(summary, "Total")
-
-	for i := range poll.PollOptions {
-		summary = append(summary, availabilitySummary(results.PollParticipants, i))
-	}
-
-	rows = append(rows, summary)
-
-	return headers, rows
+	return headers, rows, scores
 }
 
 // formatTimeslot formats a meeting poll option as a human-readable timeslot header.
@@ -146,6 +145,52 @@ func voteLabel(v *int) string {
 	default:
 		return fmt.Sprintf("%d", *v)
 	}
+}
+
+// availabilityScore computes a sortable score for a timeslot.
+// Yes votes are weighted 1000x more than maybe votes so yes always wins in sort order.
+func availabilityScore(participants []*api.PollParticipant, optIdx int) int {
+	yes, maybe := 0, 0
+
+	for _, p := range participants {
+		if optIdx >= len(p.PollVotes) {
+			continue
+		}
+
+		v := p.PollVotes[optIdx]
+		if v == nil {
+			continue
+		}
+
+		switch *v {
+		case 1:
+			yes++
+		case 2:
+			maybe++
+		}
+	}
+
+	return yes*1000 + maybe
+}
+
+// sortRowsByScore sorts rows by their availability scores in descending order.
+// Uses stable sort so equal scores preserve original poll order.
+func sortRowsByScore(rows [][]string, scores []int) {
+	indices := make([]int, len(rows))
+	for i := range indices {
+		indices[i] = i
+	}
+
+	sort.SliceStable(indices, func(i, j int) bool {
+		return scores[indices[i]] > scores[indices[j]]
+	})
+
+	sorted := make([][]string, len(rows))
+	for i, idx := range indices {
+		sorted[i] = rows[idx]
+	}
+
+	copy(rows, sorted)
 }
 
 // availabilitySummary counts yes+maybe for a given timeslot index across all participants.
