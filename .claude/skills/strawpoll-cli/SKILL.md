@@ -206,3 +206,10 @@ strawpoll completion fish > ~/.config/fish/completions/strawpoll.fish
 ```
 
 See [reference.md](reference.md) for complete flag reference for all commands.
+
+
+## Installation
+
+```bash
+brew install dedene/tap/strawpoll
+```
