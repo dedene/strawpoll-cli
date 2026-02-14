@@ -5,6 +5,27 @@ description: >
   using the strawpoll CLI. Use when the user wants to create polls, view poll results,
   schedule meetings with availability, run ranked-choice votes, delete or update polls,
   or automate StrawPoll workflows in scripts.
+license: MIT
+homepage: https://github.com/dedene/strawpoll-cli
+metadata:
+  author: dedene
+  version: "1.1.0"
+  openclaw:
+    primaryEnv: STRAWPOLL_API_KEY
+    requires:
+      env:
+        - STRAWPOLL_API_KEY
+        - STRAWPOLL_KEYRING_BACKEND
+      bins:
+        - strawpoll
+    install:
+      - kind: brew
+        tap: dedene/tap
+        formula: strawpoll
+        bins: [strawpoll]
+      - kind: go
+        package: github.com/dedene/strawpoll-cli/cmd/strawpoll
+        bins: [strawpoll]
 ---
 
 # strawpoll-cli
